@@ -1,4 +1,4 @@
-name: Deploy to cPanel
+name: Deploy to cPanel (No Git Required)
 
 on:
   push:
@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy files via SSH (rsync)
+        uses: appleboy/ssh-action@v1.0.3
 
         with:
           host: ${{ secrets.HOST }}
@@ -19,5 +22,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
 
           script: |
-            cd ~/public_html
-            git pull origin main
+            rsync -avz --delete ./ /home/${{ secrets.USERNAME }}/public_html/
